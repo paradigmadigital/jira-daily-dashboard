@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GIROSP daily board</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">-->
+
+    <link rel="stylesheet" href="/static/css/daily_dashboard.css">
+</head>
+<body>
+<div class="container">
+    <div class="navbar-header">
+        <div class="navbar-brand">
+            <p>{{ sprint.name }}</p>
+            <p style="font-size: small">{{ sprint_info.startDate }} • {{ sprint_info.endDate }}</p>
+        </div>
+    </div>
+
+    <div id="navbar" class="collapse navbar-collapse {{ worklogs_status }}">
+        <ul class="nav navbar-nav">
+            {% for member in members %}
+            <li class="member{% if member.key==selected_member %} active {{ worklogs_status }}{% endif %}">
+                <a href="{{ url_for('index', username=member.key) }}">
+                    <img src="/static/images/members/{{ member.key }}.png" title="{{ member.displayName }} {% if member.key==selected_member %}{{ worklogs_hours }}h{% endif %}"/>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        {% for status in statuses %}
+        <div class="status {{ status|lower|replace(' ', '_')}}">
+            <p><b>{{ issues_by_status.get(status)|length }}</b> {{ status }}</p>
+            {% for issue in issues_by_status.get(status) %}
+            <div class="issue {{ issue.fields.issuetype.name|lower|replace(' ', '_') }}">
+                <img src="/static/images/issues/{{ issue.fields.issuetype.name|lower|replace(' ', '_') }}.png" title="{{ issue.fields.issuetype.name }}">
+                <a href="https://jirapdi.tid.es/browse/{{ issue.key }}" target="_blank" title="{{ issue.fields.summary }}">{{ issue.key }}</a>
+                {{ issue.fields.summary|truncate(50) }}
+                <span class="remaining" title="Remaining Time Estimate {{ issue.fields.timeestimate|int // 3600 }}h">{{ issue.fields.timeestimate|int // 3600 }}h</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+</body>
+</html>
